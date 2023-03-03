@@ -53,14 +53,7 @@ impl<'q> BindCbor for Query<'q, Postgres, <Postgres as HasArguments<'q>>::Argume
             Type::Bool => self.bind(decoder.bool()?),
             // Type::Null => todo!(),
             // Type::Undefined => todo!(),
-            Type::U8 => {
-                let value = decoder.u8()?;
-                if let Ok(value) = i8::try_from(value) {
-                    self.bind(value)
-                } else {
-                    self.bind(value as i16)
-                }
-            }
+            Type::U8 => self.bind(decoder.u8()? as i16),
             Type::U16 => {
                 let value = decoder.u16()?;
                 if let Ok(value) = i16::try_from(value) {
