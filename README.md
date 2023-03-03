@@ -77,10 +77,10 @@ code is pushed to `main`, or when you push a tag with the form `vX.Y.Z`.
 
 These actions require 3 secrets
 
-1. `WASH_ISSUER_KEY`, which can be generated with `wash keys gen issuer`, then
+1. `WASH_ISSUER_KEY`, which can be generated with `wash keys gen account`, then
    look for the 58 character `Seed` value
 
-2. `WASH_SUBJECT_KEY`, which can be generated with `wash keys gen module`, then
+2. `WASH_SUBJECT_KEY`, which can be generated with `wash keys gen service`, then
    look for the 58 character `Seed` value
 
 3. `WASMCLOUD_PAT`, which can be created by following the [Github PAT
