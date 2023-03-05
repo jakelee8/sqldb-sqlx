@@ -51,8 +51,7 @@ impl<'q> BindCbor for Query<'q, Postgres, <Postgres as HasArguments<'q>>::Argume
         let datatype = decoder.datatype()?;
         let query = match datatype {
             Type::Bool => self.bind(decoder.bool()?),
-            // Type::Null => todo!(),
-            // Type::Undefined => todo!(),
+            Type::Null | Type::Undefined => self.bind(None::<bool>),
             Type::U8 => self.bind(decoder.u8()? as i16),
             Type::U16 => {
                 let value = decoder.u16()?;

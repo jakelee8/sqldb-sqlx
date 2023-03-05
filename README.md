@@ -11,13 +11,13 @@ or MS SQL databases, and implements the `wasmcloud:sqldb` capability contract.
 
 ### JSON Configuration settings
 
-| Setting                  | Description                                                                                                                                                                                                                                                                                             |
-| ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `uri`                    | database connection string. Must begin with scheme `postgres://` or `postgresql://`. Example: `postgresql://user:password@host:5678?dbname=customers`. See [uri reference](https://docs.rs/tokio-postgres/0.7.2/tokio_postgres/config/struct.Config.html) for complete documentation on all the options |
-| `pool.max_connections`   | max size of connection pool. Default is 8                                                                                                                                                                                                                                                               |
-| `pool.min_idle`          | minimum number of idle connections in pool. Default is 0. With this default, the provider does not consume resources until needed. If you need fast application startup time, you may wish to set this to 1 or more, and increase max_lifetime_secs to 86400.                                           |
-| `pool.max_lifetime_secs` | when a connection has reached this age, after it has finished processing its current workload, it is closed instead of being returned to the pool. Default is 7200 (2 hours).                                                                                                                           |
-| `pool.idle_timeout_secs` | the amount of time a connection will remain idle in the pool before it is closed. This setting can be useful to reduce billing costs if your database is billed by connection-time. Default is 600 (10 minutes).                                                                                        |
+| Setting | Description |
+| - | - |
+| `uri` | database connection string. Must begin with scheme `postgres://` or `postgresql://`. Example: `postgresql://user:password@host:5678?dbname=customers`. See [uri reference](https://docs.rs/tokio-postgres/0.7.2/tokio_postgres/config/struct.Config.html) for complete documentation on all the options |
+| `pool.max_connections` | max size of connection pool. Default is 8 |
+| `pool.min_idle` | minimum number of idle connections in pool. Default is 0. With this default, the provider does not consume resources until needed. If you need fast application startup time, you may wish to set this to 1 or more, and increase max_lifetime_secs to 86400. |
+| `pool.max_lifetime_secs` | when a connection has reached this age, after it has finished processing its current workload, it is closed instead of being returned to the pool. Default is 7200 (2 hours). |
+| `pool.idle_timeout_secs` | the amount of time a connection will remain idle in the pool before it is closed. This setting can be useful to reduce billing costs if your database is billed by connection-time. Default is 600 (10 minutes). |
 
 ### Link
 

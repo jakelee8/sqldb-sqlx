@@ -98,6 +98,14 @@ struct FlavorResult {
     flavor: String,
 }
 
+#[derive(Decode)]
+struct FlavorCommentResult {
+    #[n(0)]
+    flavor: String,
+    #[n(1)]
+    comment: Option<String>,
+}
+
 async fn flavor_queries(ctx: &Context, client: &SqlDbSender<Provider>) -> Result<(), SqlDbError> {
     // remove it in case earlier test crashed
     let resp = client
@@ -118,7 +126,8 @@ async fn flavor_queries(ctx: &Context, client: &SqlDbSender<Provider>) -> Result
                 sql: r#"create table test_flavors
             (
               id INT4 NOT NULL,
-              flavor VARCHAR(30) NOT NULL
+              flavor VARCHAR(30) NOT NULL,
+              comment TEXT
              );"#
                 .to_string(),
                 ..Default::default()
@@ -163,6 +172,64 @@ async fn flavor_queries(ctx: &Context, client: &SqlDbSender<Provider>) -> Result
     assert_eq!(rows.len(), 2);
     assert_eq!(&rows.get(0).unwrap().flavor, "Chocolate",);
     assert_eq!(&rows.get(1).unwrap().flavor, "Mint Chocolate Chip",);
+
+    let resp = client
+        .execute(
+            ctx,
+            &Statement {
+                sql: r#"insert into test_flavors (id, flavor, comment) values
+            ($1, $2, $3)
+            ;
+            "#
+                .to_string(),
+                parameters: Some(vec![
+                    minicbor::to_vec(7).unwrap(),
+                    minicbor::to_vec("Chamomile").unwrap(),
+                    minicbor::to_vec("calming").unwrap(),
+                ]),
+                ..Default::default()
+            },
+        )
+        .await?;
+    assert_eq!(resp.rows_affected, 1, "1 rows inserted");
+    let resp = client
+        .execute(
+            ctx,
+            &Statement {
+                sql: r#"insert into test_flavors (id, flavor, comment) values
+            ($1, $2, $3)
+            ;
+            "#
+                .to_string(),
+                parameters: Some(vec![
+                    minicbor::to_vec(8).unwrap(),
+                    minicbor::to_vec("Rose Chamomile").unwrap(),
+                    minicbor::to_vec(None::<bool>).unwrap(),
+                ]),
+                ..Default::default()
+            },
+        )
+        .await?;
+    assert_eq!(resp.rows_affected, 1, "1 rows inserted");
+
+    let resp = client
+        .query(
+            ctx,
+            &Statement {
+                sql: r#"select flavor, comment from test_flavors
+                    where flavor ilike '%chamomile%' order by id"#
+                    .to_string(),
+                ..Default::default()
+            },
+        )
+        .await?;
+    assert_eq!(resp.num_rows, 2, "select should have returned 1 row");
+    let rows: Vec<FlavorCommentResult> = minicbor::decode(&resp.rows)?;
+    assert_eq!(rows.len(), 2);
+    assert_eq!(&rows[0].flavor, "Chamomile");
+    assert_eq!(&rows[0].comment, &Some("calming".into()));
+    assert_eq!(&rows[1].flavor, "Rose Chamomile");
+    assert_eq!(&rows[1].comment, &None);
 
     let _resp = client
         .execute(

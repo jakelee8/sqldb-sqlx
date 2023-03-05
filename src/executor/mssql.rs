@@ -44,8 +44,7 @@ impl<'q> BindCbor for Query<'q, Mssql, <Mssql as HasArguments<'q>>::Arguments> {
         let datatype = decoder.datatype()?;
         let query = match datatype {
             Type::Bool => self.bind(decoder.bool()?),
-            // Type::Null => todo!(),
-            // Type::Undefined => todo!(),
+            Type::Null | Type::Undefined => self.bind(None::<bool>),
             Type::U8 => {
                 let value = decoder.u8()?;
                 if let Ok(value) = i8::try_from(value) {
